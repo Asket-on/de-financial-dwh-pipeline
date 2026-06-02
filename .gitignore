@@ -1,0 +1,13 @@
+.env
+*.log
+*.tmp
+*.csv.tmp
+__pycache__/
+.pytest_cache/
+.local/
+*.sqlite
+*.sqlite3
+.ipynb_checkpoints/
+data/
+outputs/
+notebooks/.ipynb_checkpoints/

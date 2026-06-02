@@ -1,0 +1,4 @@
+operation_id,account_number_from,currency_code,country,status,transaction_type,amount,transaction_dt
+op_001,acc_1001,840,DE,done,transfer,120.50,2024-01-01 10:15:00
+op_002,acc_1002,978,DE,done,payment,85.00,2024-01-01 11:45:00
+op_003,acc_1001,840,FR,done,transfer,200.00,2024-01-02 09:20:00
