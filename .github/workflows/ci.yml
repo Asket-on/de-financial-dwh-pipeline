@@ -51,5 +51,8 @@ jobs:
           grep -q "build_financial_global_metrics_mart" airflow-dags.txt
           grep -q "load_financial_sources_to_staging" airflow-dags.txt
 
+      - name: Verify bounded Airflow catchup
+        run: python scripts/run_airflow_catchup.py --cleanup
+
       - name: Compile Python sources
         run: python -m compileall -q src dags tests scripts

@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T18:42:30+02:00
+updated: 2026-06-04T22:19:21+02:00
 ---
 # Architecture Notes
 
@@ -26,7 +26,9 @@ updated: 2026-06-04T18:42:30+02:00
 
 `dags/financial_dwh_pipeline.py` exposes the same load and build steps as Airflow tasks when Airflow is installed and as directly runnable Python callables otherwise.
 
-The Airflow mart task maps `{{ ds }}` to an idempotent one-day refresh. Bounded `catchup=True` demonstrates backfill across the synthetic source period. Manual local runs can pass a wider inclusive range.
+The Airflow mart task maps `{{ ds }}` to an idempotent one-day refresh. Bounded `catchup=True` demonstrates backfill across the synthetic source period, while `max_active_runs=1` serializes writes to the shared SQLite demo warehouse. Manual local runs can pass a wider inclusive range.
+
+`docker-compose.airflow.yml` provides a persistent local verification stack with a PostgreSQL metadata database, LocalExecutor scheduler, and webserver. `scripts/run_airflow_catchup.py` unpauses only the bounded pipeline DAG and verifies both successful DAG runs and all four expected task instances.
 
 ## Publication Notes
 

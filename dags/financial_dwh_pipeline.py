@@ -17,6 +17,7 @@ else:
         end_date=datetime(2024, 1, 3),
         schedule="@daily",
         catchup=True,
+        max_active_runs=1,
         tags=["portfolio", "financial-dwh"],
     ) as dag:
         load_task = PythonOperator(

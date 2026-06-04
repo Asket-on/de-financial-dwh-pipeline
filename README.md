@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T19:58:12+02:00
+updated: 2026-06-04T22:26:09+02:00
 ---
 # Financial DWH Pipeline
 
@@ -19,6 +19,7 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - dataset profiling and join-fanout protection;
 - date-parameterized idempotent refresh and bounded historical backfill;
 - Airflow-compatible orchestration entrypoints;
+- a persistent local Airflow scheduler/webserver stack with verified bounded catchup;
 - a reproducible static dashboard generated from the checked mart;
 - a publication boundary between private course work and synthetic demo data.
 
@@ -109,6 +110,20 @@ GitHub Actions runs this Docker Compose command on every push and pull request, 
 
 CI also mounts the repository into the official `apache/airflow:2.10.5` image and requires all three DAG IDs to appear in `airflow dags list`.
 
+Run and verify the bounded two-day catchup with a persistent LocalExecutor scheduler, webserver, and PostgreSQL metadata database:
+
+```bash
+python scripts/run_airflow_catchup.py
+```
+
+The verifier unpauses only `financial_dwh_pipeline`, waits for successful DAG runs on `2024-01-01` and `2024-01-02`, and requires both task instances to succeed in each run. The Airflow UI remains available at `http://localhost:8080` with demo credentials `admin` / `admin`.
+
+Stop the stack and remove its metadata and log volumes:
+
+```bash
+docker compose -f docker-compose.airflow.yml down --volumes
+```
+
 ## Warehouse Mapping
 
 The publication-oriented SQL keeps warehouse schemas such as `staging.transactions` and `dwh.global_metrics`. The local SQLite adapter uses equivalent prefixed tables:
@@ -127,9 +142,11 @@ The publication-oriented SQL keeps warehouse schemas such as `staging.transactio
 1. `load_sources_to_staging`
 2. `build_global_metrics_mart`
 
-The mart task receives Airflow's `{{ ds }}` as both refresh boundaries. `catchup=True` is bounded to the synthetic sample period, demonstrating historical backfill without creating unbounded demo runs. The task callables also run directly, which keeps local verification lightweight.
+The mart task receives Airflow's `{{ ds }}` as both refresh boundaries. `catchup=True` is bounded to the synthetic sample period, and `max_active_runs=1` serializes writes to the shared SQLite demo warehouse. The task callables also run directly, which keeps local verification lightweight.
 
-Full DAG discovery is verified in CI with the pinned official Airflow container.
+Full DAG discovery is verified in CI with the pinned official Airflow container. The separate Airflow Compose stack verifies successful scheduler-created catchup DAG runs and task instances locally and in CI.
+
+See `docs/airflow_catchup_evidence.md` for the verified scheduled run IDs and task-instance contract.
 
 ## Example Result
 
@@ -161,7 +178,7 @@ The local run also prints a compact profile covering transaction volume, distinc
 ## Known Limitations
 
 - SQLite is the local demo adapter, not a production substitute for Vertica.
-- The demo verifies DAG discovery but does not run a persistent scheduler, webserver, or executor.
+- The persistent Airflow stack is intended for local portfolio verification, not production deployment.
 - Docker Compose still requires a local Docker installation.
 - The dashboard is a static publication artifact, not a live BI service.
 - Sample data is synthetic and intentionally small.
