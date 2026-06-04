@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T18:42:30+02:00
+updated: 2026-06-04T19:28:56+02:00
 ---
 # Financial DWH Pipeline
 
@@ -95,6 +95,8 @@ The same local pipeline can run in a clean Python container:
 ```bash
 docker compose up --abort-on-container-exit
 ```
+
+GitHub Actions runs this Docker Compose command on every push and pull request, then removes the test container and volumes.
 
 ## Warehouse Mapping
 

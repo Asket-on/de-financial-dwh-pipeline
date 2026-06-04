@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T18:42:30+02:00
+updated: 2026-06-04T19:28:56+02:00
 ---
 # Publication Readiness
 
@@ -15,6 +15,7 @@ updated: 2026-06-04T18:42:30+02:00
 - Positive and negative unit-test scenarios.
 - Airflow-compatible task callables.
 - GitHub Actions CI workflow.
+- Docker Compose execution gate in GitHub Actions.
 - Repeatable secrets audit.
 - Generated `.local/`, `__pycache__/`, and SQLite files ignored.
 
@@ -45,7 +46,6 @@ Observed result:
 
 ## External Checks
 
-- Run `docker compose up --abort-on-container-exit` on a machine with Docker.
 - Load `dags/financial_dwh_pipeline.py` in a full Airflow installation and verify DAG discovery.
 - Confirm GitHub Actions after the public repository is created.
 

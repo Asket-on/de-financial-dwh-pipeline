@@ -29,6 +29,12 @@ jobs:
       - name: Run local warehouse pipeline
         run: python -m src.local_warehouse
 
+      - name: Run Docker Compose pipeline
+        run: docker compose up --abort-on-container-exit --exit-code-from pipeline
+
+      - name: Clean up Docker Compose
+        if: always()
+        run: docker compose down --volumes
+
       - name: Compile Python sources
         run: python -m compileall -q src dags tests scripts
-
