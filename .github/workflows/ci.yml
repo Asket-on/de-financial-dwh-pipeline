@@ -43,7 +43,7 @@ jobs:
             -e PYTHONPATH=/opt/airflow/project \
             -v "$PWD:/opt/airflow/project:ro" \
             apache/airflow:2.10.5 \
-            airflow dags list --output plain > airflow-dags.txt
+            bash -c 'airflow db init >/dev/null && airflow dags list --output plain' > airflow-dags.txt
           grep -q "financial_dwh_pipeline" airflow-dags.txt
           grep -q "build_financial_global_metrics_mart" airflow-dags.txt
           grep -q "load_financial_sources_to_staging" airflow-dags.txt
