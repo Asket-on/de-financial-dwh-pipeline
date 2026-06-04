@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T19:28:56+02:00
+updated: 2026-06-04T19:31:36+02:00
 ---
 # Publication Readiness
 
@@ -16,6 +16,7 @@ updated: 2026-06-04T19:28:56+02:00
 - Airflow-compatible task callables.
 - GitHub Actions CI workflow.
 - Docker Compose execution gate in GitHub Actions.
+- Full DAG discovery gate in the official `apache/airflow:2.10.5` container.
 - Repeatable secrets audit.
 - Generated `.local/`, `__pycache__/`, and SQLite files ignored.
 
@@ -46,8 +47,8 @@ Observed result:
 
 ## External Checks
 
-- Load `dags/financial_dwh_pipeline.py` in a full Airflow installation and verify DAG discovery.
-- Confirm GitHub Actions after the public repository is created.
+- Run a persistent Airflow scheduler/executor and inspect bounded catchup task instances.
+- Confirm GitHub Actions after each published change.
 
 ## Publication Boundary
 

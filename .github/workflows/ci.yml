@@ -36,5 +36,17 @@ jobs:
         if: always()
         run: docker compose down --volumes
 
+      - name: Verify Airflow DAG discovery
+        run: |
+          docker run --rm \
+            -e AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/project/dags \
+            -e PYTHONPATH=/opt/airflow/project \
+            -v "$PWD:/opt/airflow/project:ro" \
+            apache/airflow:2.10.5 \
+            airflow dags list --output plain > airflow-dags.txt
+          grep -q "financial_dwh_pipeline" airflow-dags.txt
+          grep -q "build_financial_global_metrics_mart" airflow-dags.txt
+          grep -q "load_financial_sources_to_staging" airflow-dags.txt
+
       - name: Compile Python sources
         run: python -m compileall -q src dags tests scripts

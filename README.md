@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T19:28:56+02:00
+updated: 2026-06-04T19:31:36+02:00
 ---
 # Financial DWH Pipeline
 
@@ -98,6 +98,8 @@ docker compose up --abort-on-container-exit
 
 GitHub Actions runs this Docker Compose command on every push and pull request, then removes the test container and volumes.
 
+CI also mounts the repository into the official `apache/airflow:2.10.5` image and requires all three DAG IDs to appear in `airflow dags list`.
+
 ## Warehouse Mapping
 
 The publication-oriented SQL keeps warehouse schemas such as `staging.transactions` and `dwh.global_metrics`. The local SQLite adapter uses equivalent prefixed tables:
@@ -117,6 +119,8 @@ The publication-oriented SQL keeps warehouse schemas such as `staging.transactio
 2. `build_global_metrics_mart`
 
 The mart task receives Airflow's `{{ ds }}` as both refresh boundaries. `catchup=True` is bounded to the synthetic sample period, demonstrating historical backfill without creating unbounded demo runs. The task callables also run directly, which keeps local verification lightweight.
+
+Full DAG discovery is verified in CI with the pinned official Airflow container.
 
 ## Example Result
 
@@ -146,7 +150,7 @@ The local run also prints a compact profile covering transaction volume, distinc
 ## Known Limitations
 
 - SQLite is the local demo adapter, not a production substitute for Vertica.
-- Airflow DAG discovery has not been tested in a full Airflow installation.
+- The demo verifies DAG discovery but does not run a persistent scheduler, webserver, or executor.
 - Docker Compose still requires a local Docker installation.
 - Sample data is synthetic and intentionally small.
 
