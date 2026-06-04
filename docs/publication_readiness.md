@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T19:31:36+02:00
+updated: 2026-06-04T19:58:12+02:00
 ---
 # Publication Readiness
 
@@ -17,6 +17,7 @@ updated: 2026-06-04T19:31:36+02:00
 - GitHub Actions CI workflow.
 - Docker Compose execution gate in GitHub Actions.
 - Full DAG discovery gate in the official `apache/airflow:2.10.5` container.
+- Reproducible static dashboard artifact generated from the checked local mart.
 - Repeatable secrets audit.
 - Generated `.local/`, `__pycache__/`, and SQLite files ignored.
 

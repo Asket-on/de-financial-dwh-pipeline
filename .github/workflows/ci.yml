@@ -29,6 +29,9 @@ jobs:
       - name: Run local warehouse pipeline
         run: python -m src.local_warehouse
 
+      - name: Verify reproducible dashboard artifact
+        run: python scripts/build_dashboard.py --check
+
       - name: Run Docker Compose pipeline
         run: docker compose up --abort-on-container-exit --exit-code-from pipeline
 

@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T19:31:36+02:00
+updated: 2026-06-04T19:58:12+02:00
 ---
 # Financial DWH Pipeline
 
@@ -19,6 +19,7 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - dataset profiling and join-fanout protection;
 - date-parameterized idempotent refresh and bounded historical backfill;
 - Airflow-compatible orchestration entrypoints;
+- a reproducible static dashboard generated from the checked mart;
 - a publication boundary between private course work and synthetic demo data.
 
 ## Architecture
@@ -84,6 +85,14 @@ Run the repeatable secrets audit:
 python scripts/check_no_secrets.py
 ```
 
+Regenerate the static dashboard from the checked local mart:
+
+```bash
+python scripts/build_dashboard.py
+```
+
+Open `docs/dashboard.html` to inspect the KPI summary, mart rows, refresh contract, and data-quality results. CI runs the generator in check mode and fails when the committed artifact is stale.
+
 Run the orchestration callables without installing Airflow:
 
 ```bash
@@ -134,6 +143,8 @@ The synthetic input produces three daily currency-level mart rows:
 
 See `docs/example_output.md` for the quality-check result table.
 
+The same result is published as a self-contained dashboard in `docs/dashboard.html`.
+
 ## Data Quality Checks
 
 Checks are defined in `sql/04_quality_checks.sql` and `sql/local/03_quality_checks.sql`:
@@ -152,6 +163,7 @@ The local run also prints a compact profile covering transaction volume, distinc
 - SQLite is the local demo adapter, not a production substitute for Vertica.
 - The demo verifies DAG discovery but does not run a persistent scheduler, webserver, or executor.
 - Docker Compose still requires a local Docker installation.
+- The dashboard is a static publication artifact, not a live BI service.
 - Sample data is synthetic and intentionally small.
 
 ## Recruiter Summary

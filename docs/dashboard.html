@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Financial DWH Metrics Dashboard</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #17202a; background: #f4f7f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #173b45; color: white; padding: 32px max(24px, calc((100vw - 1120px) / 2)); }
+    header p { color: #c5d9dd; margin: 8px 0 0; }
+    main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin: 0; letter-spacing: 0; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 18px; margin-bottom: 18px; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi, .panel { background: white; border: 1px solid #dce5e7; border-radius: 6px; }
+    .kpi { padding: 18px; }
+    .kpi span { color: #5e7176; font-size: 13px; }
+    .kpi strong { display: block; font-size: 25px; margin-top: 6px; }
+    .grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; }
+    .panel { padding: 20px; margin-bottom: 16px; }
+    .bar-row { display: grid; grid-template-columns: 125px 1fr 86px; gap: 12px; align-items: center; margin: 15px 0; font-size: 13px; }
+    .bar-row span { color: #6e7d81; display: block; margin-top: 3px; }
+    .bar-track { height: 14px; background: #e8eef0; border-radius: 3px; overflow: hidden; }
+    .bar { height: 100%; background: #e85d4a; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 8px; border-bottom: 1px solid #e5ebed; text-align: right; }
+    th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+    th { color: #5e7176; font-weight: 600; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #e5ebed; font-size: 13px; }
+    li strong { color: #16734b; white-space: nowrap; }
+    footer { color: #687a7f; font-size: 12px; padding-top: 4px; }
+    @media (max-width: 760px) {
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 95px 1fr 78px; }
+      .panel { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Financial DWH Metrics Dashboard</h1>
+    <p>Synthetic daily mart output with verified data-quality gates</p>
+  </header>
+  <main>
+    <section class="kpis" aria-label="Key performance indicators">
+      <div class="kpi"><span>Total USD equivalent</span><strong>$413.15</strong></div>
+      <div class="kpi"><span>Transactions</span><strong>3</strong></div>
+      <div class="kpi"><span>Active days</span><strong>2</strong></div>
+      <div class="kpi"><span>Currencies</span><strong>2</strong></div>
+    </section>
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <h2>USD equivalent by date and currency</h2>
+          
+          <div class="bar-row">
+            <div><strong>2024-01-01</strong><span>USD</span></div>
+            <div class="bar-track"><div class="bar" style="width: 60.2%"></div></div>
+            <strong>$120.50</strong>
+          </div>
+
+          <div class="bar-row">
+            <div><strong>2024-01-01</strong><span>EUR</span></div>
+            <div class="bar-track"><div class="bar" style="width: 46.3%"></div></div>
+            <strong>$92.65</strong>
+          </div>
+
+          <div class="bar-row">
+            <div><strong>2024-01-02</strong><span>USD</span></div>
+            <div class="bar-track"><div class="bar" style="width: 100.0%"></div></div>
+            <strong>$200.00</strong>
+          </div>
+        </section>
+        <section class="panel">
+          <h2>Mart rows</h2>
+          <table>
+            <thead><tr><th>Date</th><th>Currency</th><th>Native amount</th><th>USD equivalent</th><th>Transactions</th></tr></thead>
+            <tbody>
+            <tr>
+              <td>2024-01-01</td>
+              <td>USD</td>
+              <td>120.50</td>
+              <td>$120.50</td>
+              <td>1</td>
+            </tr>
+
+            <tr>
+              <td>2024-01-01</td>
+              <td>EUR</td>
+              <td>85.00</td>
+              <td>$92.65</td>
+              <td>1</td>
+            </tr>
+
+            <tr>
+              <td>2024-01-02</td>
+              <td>USD</td>
+              <td>200.00</td>
+              <td>$200.00</td>
+              <td>1</td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+      <aside>
+        <section class="panel">
+          <h2>Data-quality gates</h2>
+          <ul><li><span>Duplicate Current Currency Rates</span><strong>0 failures</strong></li>
+<li><span>Duplicate Mart Grain</span><strong>0 failures</strong></li>
+<li><span>Join Fanout Rows</span><strong>0 failures</strong></li>
+<li><span>Missing Exchange Rates</span><strong>0 failures</strong></li>
+<li><span>Missing Operation Ids</span><strong>0 failures</strong></li>
+<li><span>Negative Amounts</span><strong>0 failures</strong></li></ul>
+        </section>
+        <section class="panel">
+          <h2>Refresh contract</h2>
+          <ul>
+            <li><span>Inclusive window</span><strong>2024-01-01 to 2024-01-02</strong></li>
+            <li><span>Refreshed mart rows</span><strong>3</strong></li>
+            <li><span>Superseded rates</span><strong>1</strong></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+    <footer>Generated deterministically from the repository's synthetic sources by <code>python scripts/build_dashboard.py</code>.</footer>
+  </main>
+</body>
+</html>
