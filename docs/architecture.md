@@ -1,15 +1,17 @@
 ---
-updated: 2026-06-02T22:09:22+02:00
+updated: 2026-06-04T18:42:30+02:00
 ---
 # Architecture Notes
 
 ## Layers
 
 - Source: synthetic transaction and currency CSV files.
-- Local staging: SQLite tables `staging_transactions` and `staging_currencies`.
+- Local raw staging: SQLite tables `staging_transactions` and `staging_currencies`.
+- Local curated staging: `staging_currency_rates_current`, selected deterministically by rate update time and source row number.
 - Local DWH: SQLite table `dwh_global_metrics`.
 - Publication-oriented warehouse mapping: `staging.transactions`, `staging.currencies`, and `dwh.global_metrics`.
-- Quality: SQL checks for nulls, negative amounts, rate coverage, and grain uniqueness.
+- Quality: SQL checks for nulls, negative amounts, rate coverage, grain uniqueness, and join fanout.
+- Profiling: row counts, distinct operation IDs, date coverage, and raw-to-current currency-version counts.
 
 ## Local Execution
 
@@ -17,11 +19,14 @@ updated: 2026-06-02T22:09:22+02:00
 
 1. create SQLite tables;
 2. load synthetic CSV rows;
-3. rebuild the global metrics mart;
-4. query the quality-check view;
-5. fail the run if any check is non-zero.
+3. select one current currency-rate version per declared grain;
+4. replace only the requested inclusive mart date range without join fanout;
+5. query profiling and quality-check views;
+6. fail the run if any check is non-zero.
 
 `dags/financial_dwh_pipeline.py` exposes the same load and build steps as Airflow tasks when Airflow is installed and as directly runnable Python callables otherwise.
+
+The Airflow mart task maps `{{ ds }}` to an idempotent one-day refresh. Bounded `catchup=True` demonstrates backfill across the synthetic source period. Manual local runs can pass a wider inclusive range.
 
 ## Publication Notes
 

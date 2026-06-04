@@ -18,3 +18,17 @@ select date_update, currency_from, count(*) as rows_at_grain
 from dwh.global_metrics
 group by date_update, currency_from
 having count(*) > 1;
+
+-- Check 5: deterministic deduplication should leave one current rate per grain.
+select currency_code, currency_code_with, date_update, count(*) as rows_at_grain
+from staging.currency_rates_current
+group by currency_code, currency_code_with, date_update
+having count(*) > 1;
+
+-- Check 6: joining current rates should preserve transaction-level row count.
+select
+    count(*) - count(distinct transactions.operation_id) as join_fanout_rows
+from staging.transactions as transactions
+left join staging.currency_rates_current as rates
+    on transactions.currency_code = rates.currency_code
+    and cast(transactions.transaction_dt as date) = rates.date_update;

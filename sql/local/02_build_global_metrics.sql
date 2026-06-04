@@ -1,23 +1,27 @@
-delete from dwh_global_metrics;
+delete from staging_currency_rates_current;
 
-insert into dwh_global_metrics (
+insert into staging_currency_rates_current (
+    source_row_number,
+    currency_code,
+    currency_code_with,
     date_update,
-    currency_from,
-    amount_total,
-    amount_usd_total,
-    transaction_count
+    currency_with_div,
+    rate_updated_at
 )
 select
-    date(t.transaction_dt) as date_update,
-    t.currency_code as currency_from,
-    sum(t.amount) as amount_total,
-    sum(t.amount * c.currency_with_div) as amount_usd_total,
-    count(*) as transaction_count
-from staging_transactions as t
-left join staging_currencies as c
-    on t.currency_code = c.currency_code
-    and date(t.transaction_dt) = c.date_update
-group by
-    date(t.transaction_dt),
-    t.currency_code;
-
+    source_row_number,
+    currency_code,
+    currency_code_with,
+    date_update,
+    currency_with_div,
+    rate_updated_at
+from (
+    select
+        currencies.*,
+        row_number() over (
+            partition by currency_code, currency_code_with, date_update
+            order by rate_updated_at desc, source_row_number desc
+        ) as rn
+    from staging_currencies as currencies
+)
+where rn = 1;

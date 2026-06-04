@@ -10,10 +10,21 @@ create table if not exists staging_transactions (
 );
 
 create table if not exists staging_currencies (
+    source_row_number integer,
     currency_code integer,
     currency_code_with integer,
     date_update text,
-    currency_with_div real
+    currency_with_div real,
+    rate_updated_at text
+);
+
+create table if not exists staging_currency_rates_current (
+    source_row_number integer,
+    currency_code integer,
+    currency_code_with integer,
+    date_update text,
+    currency_with_div real,
+    rate_updated_at text
 );
 
 create table if not exists dwh_global_metrics (
@@ -23,4 +34,3 @@ create table if not exists dwh_global_metrics (
     amount_usd_total real,
     transaction_count integer
 );
-

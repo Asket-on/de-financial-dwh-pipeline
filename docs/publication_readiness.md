@@ -1,3 +1,6 @@
+---
+updated: 2026-06-04T18:42:30+02:00
+---
 # Publication Readiness
 
 ## Ready
@@ -6,6 +9,9 @@
 - Generic schemas and demo configuration only.
 - Repeatable local SQLite pipeline.
 - Visible SQL quality gates.
+- Deterministic currency-rate version selection.
+- Compact dataset profiling and join-fanout protection.
+- Date-parameterized idempotent mart refresh and bounded Airflow backfill contract.
 - Positive and negative unit-test scenarios.
 - Airflow-compatible task callables.
 - GitHub Actions CI workflow.
@@ -25,12 +31,17 @@ python -m compileall -q src dags tests scripts
 Observed result:
 
 - secrets audit passed;
-- `3` tests passed;
+- `8` tests passed;
 - `3` transaction rows loaded;
-- `3` currency rows loaded;
+- `4` raw currency rows loaded and reduced to `3` current rows;
 - `3` mart rows built;
-- `5` quality checks returned `0`;
+- `6` quality checks returned `0`;
+- profiling reported `1` superseded currency-rate version;
 - missing exchange-rate scenario was rejected.
+- artificial join-fanout scenario was rejected.
+- repeated daily refresh was idempotent and preserved untouched dates;
+- inclusive two-day backfill rebuilt the expected mart partitions;
+- inverted refresh ranges were rejected.
 
 ## External Checks
 
@@ -41,4 +52,3 @@ Observed result:
 ## Publication Boundary
 
 Publish this sanitized package only. Keep private course notes, notebooks, credentials, infrastructure identifiers, and raw assignment text outside the repository.
-

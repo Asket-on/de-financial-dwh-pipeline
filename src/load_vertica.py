@@ -5,6 +5,17 @@ from src.extract import read_sources
 def build_global_metrics_preview() -> None:
     settings = load_settings()
     transactions, currencies = read_sources()
+    currencies = (
+        currencies.reset_index(names="source_row_number")
+        .sort_values(
+            ["currency_code", "currency_code_with", "date_update", "rate_updated_at", "source_row_number"],
+            ascending=[True, True, True, False, False],
+        )
+        .drop_duplicates(
+            subset=["currency_code", "currency_code_with", "date_update"],
+            keep="first",
+        )
+    )
     joined = transactions.merge(
         currencies,
         left_on=["currency_code", transactions["transaction_dt"].dt.date],
@@ -13,6 +24,8 @@ def build_global_metrics_preview() -> None:
         suffixes=("", "_currency"),
     )
     joined["amount_usd"] = joined["amount"] * joined["currency_with_div"]
+    if len(joined) != len(transactions):
+        raise RuntimeError("Join fanout detected before mart aggregation")
     mart = (
         joined.groupby([transactions["transaction_dt"].dt.date, "currency_code"], as_index=False)
         .agg(amount_total=("amount", "sum"), amount_usd_total=("amount_usd", "sum"), transaction_count=("operation_id", "count"))

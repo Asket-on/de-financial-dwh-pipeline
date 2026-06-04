@@ -12,8 +12,19 @@ create table if not exists staging.transactions (
 );
 
 create table if not exists staging.currencies (
+    source_row_number integer,
     currency_code integer,
     currency_code_with integer,
     date_update date,
-    currency_with_div numeric(18, 8)
+    currency_with_div numeric(18, 8),
+    rate_updated_at timestamp
+);
+
+create table if not exists staging.currency_rates_current (
+    source_row_number integer,
+    currency_code integer,
+    currency_code_with integer,
+    date_update date,
+    currency_with_div numeric(18, 8),
+    rate_updated_at timestamp
 );

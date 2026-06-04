@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-02T22:18:17+02:00
+updated: 2026-06-04T18:42:30+02:00
 ---
 # Financial DWH Pipeline
 
@@ -15,6 +15,9 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - reproducible batch loading from source files;
 - SQL mart construction;
 - visible data-quality gates;
+- deterministic source-version deduplication;
+- dataset profiling and join-fanout protection;
+- date-parameterized idempotent refresh and bounded historical backfill;
 - Airflow-compatible orchestration entrypoints;
 - a publication boundary between private course work and synthetic demo data.
 
@@ -23,10 +26,11 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 ```mermaid
 flowchart LR
     A["Sample source data"] --> B["Extract"]
-    B --> C["Staging tables"]
-    C --> D["DWH mart: global_metrics"]
-    D --> E["Quality checks"]
-    D --> F["BI / analysis"]
+    B --> C["Raw staging tables"]
+    C --> D["Current currency rates"]
+    D --> E["DWH mart: global_metrics"]
+    E --> F["Profiling and quality checks"]
+    E --> G["BI / analysis"]
 ```
 
 ## Stack
@@ -58,6 +62,15 @@ The default local mode uses Python's built-in `sqlite3` module and synthetic CSV
 ```bash
 python -m src.local_warehouse
 ```
+
+Refresh one date or an inclusive backfill range:
+
+```bash
+python -m src.local_warehouse --start-date 2024-01-01
+python -m src.local_warehouse --start-date 2024-01-01 --end-date 2024-01-02
+```
+
+Each run replaces only the requested mart date range. Repeating the same range is idempotent and leaves other dates unchanged.
 
 Run the standard-library test suite:
 
@@ -91,16 +104,17 @@ The publication-oriented SQL keeps warehouse schemas such as `staging.transactio
 |---|---|
 | `staging.transactions` | `staging_transactions` |
 | `staging.currencies` | `staging_currencies` |
+| `staging.currency_rates_current` | `staging_currency_rates_current` |
 | `dwh.global_metrics` | `dwh_global_metrics` |
 
 ## Airflow
 
-`dags/financial_dwh_pipeline.py` defines a two-task Airflow DAG when Airflow is installed:
+`dags/financial_dwh_pipeline.py` defines a two-task daily Airflow DAG when Airflow is installed:
 
 1. `load_sources_to_staging`
 2. `build_global_metrics_mart`
 
-The task callables also run directly, which keeps local verification lightweight.
+The mart task receives Airflow's `{{ ds }}` as both refresh boundaries. `catchup=True` is bounded to the synthetic sample period, demonstrating historical backfill without creating unbounded demo runs. The task callables also run directly, which keeps local verification lightweight.
 
 ## Example Result
 
@@ -116,13 +130,16 @@ See `docs/example_output.md` for the quality-check result table.
 
 ## Data Quality Checks
 
-Initial checks are defined in `sql/04_quality_checks.sql`:
+Checks are defined in `sql/04_quality_checks.sql` and `sql/local/03_quality_checks.sql`:
 
 - required fields are not null;
 - transaction amounts are non-negative;
 - currency rates are present for mart dates;
-- `global_metrics` has one row per expected date/currency grain.
-- currency-rate source grain is unique in local mode.
+- `global_metrics` has one row per expected date/currency grain;
+- current currency-rate grain is unique after deterministic deduplication;
+- joining current rates does not multiply transaction rows.
+
+The local run also prints a compact profile covering transaction volume, distinct operation IDs, time range, raw currency-rate rows, current rows, and superseded versions.
 
 ## Known Limitations
 

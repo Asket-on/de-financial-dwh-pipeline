@@ -8,7 +8,10 @@ from src.config import load_settings
 def read_sources() -> tuple[pd.DataFrame, pd.DataFrame]:
     settings = load_settings()
     transactions = pd.read_csv(Path(settings.transactions_path), parse_dates=["transaction_dt"])
-    currencies = pd.read_csv(Path(settings.currencies_path), parse_dates=["date_update"])
+    currencies = pd.read_csv(
+        Path(settings.currencies_path),
+        parse_dates=["date_update", "rate_updated_at"],
+    )
     return transactions, currencies
 
 
