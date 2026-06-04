@@ -59,6 +59,10 @@ def catchup_status() -> dict[str, object]:
     }
     return {
         "run_rows": run_rows,
+        "task_rows": [
+            {"run_id": task.run_id, "task_id": task.task_id, "state": task.state}
+            for task in task_rows
+        ],
         "successful_dates": successful_dates,
         "successful_tasks": successful_tasks,
         "expected_tasks": expected_tasks,

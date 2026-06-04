@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T22:19:21+02:00
+updated: 2026-06-04T22:40:46+02:00
 ---
 # Architecture Notes
 
@@ -28,7 +28,7 @@ updated: 2026-06-04T22:19:21+02:00
 
 The Airflow mart task maps `{{ ds }}` to an idempotent one-day refresh. Bounded `catchup=True` demonstrates backfill across the synthetic source period, while `max_active_runs=1` serializes writes to the shared SQLite demo warehouse. Manual local runs can pass a wider inclusive range.
 
-`docker-compose.airflow.yml` provides a persistent local verification stack with a PostgreSQL metadata database, LocalExecutor scheduler, and webserver. `scripts/run_airflow_catchup.py` unpauses only the bounded pipeline DAG and verifies both successful DAG runs and all four expected task instances.
+`docker-compose.airflow.yml` provides a persistent local verification stack with a PostgreSQL metadata database, LocalExecutor scheduler, and webserver. The demo warehouse lives in the writable Airflow logs volume so the same stack works with Linux and Windows bind-mount permissions. `scripts/run_airflow_catchup.py` unpauses only the bounded pipeline DAG and verifies both successful DAG runs and all four expected task instances.
 
 ## Publication Notes
 
