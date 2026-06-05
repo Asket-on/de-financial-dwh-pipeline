@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-05T20:01:14+02:00
+updated: 2026-06-05T20:15:00+02:00
 ---
 # Financial DWH Pipeline
 
@@ -21,7 +21,7 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - Airflow-compatible orchestration entrypoints;
 - a persistent local Airflow scheduler/webserver stack with verified bounded catchup;
 - PostgreSQL-compatible execution of the warehouse-oriented SQL;
-- a reproducible static dashboard generated from the checked mart;
+- a reproducible static dashboard generated from the checked mart and published through GitHub Pages;
 - a publication boundary between private course work and synthetic demo data.
 
 ## Architecture
@@ -93,7 +93,7 @@ Regenerate the static dashboard from the checked local mart:
 python scripts/build_dashboard.py
 ```
 
-Open `docs/dashboard.html` to inspect the KPI summary, mart rows, refresh contract, and data-quality results. CI runs the generator in check mode and fails when the committed artifact is stale.
+Open `docs/dashboard.html` to inspect the KPI summary, mart rows, refresh contract, and data-quality results. CI runs the generator in check mode and fails when the committed artifact is stale. The same artifact is deployed as the GitHub Pages dashboard preview at `https://asket-on.github.io/de-financial-dwh-pipeline/`.
 
 Run the orchestration callables without installing Airflow:
 

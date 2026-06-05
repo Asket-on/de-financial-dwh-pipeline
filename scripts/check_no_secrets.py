@@ -24,6 +24,8 @@ ALLOWED_ASSIGNMENT_VALUES = {
     "demo_user",
     "localhost",
 }
+ALLOWED_ASSIGNMENT_KEYS = {"id-token"}
+GITHUB_ID_TOKEN_PERMISSION = "id-" + "token:"
 
 
 def iter_text_files() -> list[Path]:
@@ -45,8 +47,15 @@ def scan_file(path: Path) -> list[str]:
         for label, pattern in PATTERNS.items():
             for match in pattern.finditer(line):
                 if label == "generic secret assignment":
+                    if line.strip().lower().startswith(GITHUB_ID_TOKEN_PERMISSION):
+                        continue
+                    key = match.group(0).split(":", 1)[0].split("=", 1)[0].strip().lower()
                     value = match.group(1).rstrip(",")
-                    if value in ALLOWED_ASSIGNMENT_VALUES or "os.getenv(" in line:
+                    if (
+                        key in ALLOWED_ASSIGNMENT_KEYS
+                        or value in ALLOWED_ASSIGNMENT_VALUES
+                        or "os.getenv(" in line
+                    ):
                         continue
                 findings.append(f"{relative_path}:{line_number}: {label}")
 
@@ -72,4 +81,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

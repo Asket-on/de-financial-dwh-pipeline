@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-05T20:01:14+02:00
+updated: 2026-06-05T20:15:00+02:00
 ---
 # Publication Readiness
 
@@ -20,6 +20,7 @@ updated: 2026-06-05T20:01:14+02:00
 - Persistent local Airflow scheduler/webserver stack and bounded catchup verifier.
 - PostgreSQL-compatible warehouse SQL execution gate.
 - Reproducible static dashboard artifact generated from the checked local mart.
+- GitHub Pages workflow for hosted dashboard preview.
 - Repeatable secrets audit.
 - Generated `.local/`, `__pycache__/`, and SQLite files ignored.
 
