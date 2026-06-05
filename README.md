@@ -24,6 +24,12 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - a reproducible static dashboard generated from the checked mart and published through GitHub Pages;
 - a publication boundary between private course work and synthetic demo data.
 
+## Dashboard Preview
+
+[![Financial DWH Metrics Dashboard](docs/assets/dashboard-preview.png)](https://asket-on.github.io/de-financial-dwh-pipeline/)
+
+Live dashboard: [asket-on.github.io/de-financial-dwh-pipeline](https://asket-on.github.io/de-financial-dwh-pipeline/)
+
 ## Architecture
 
 ```mermaid
