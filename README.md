@@ -30,6 +30,8 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 
 Live dashboard: [asket-on.github.io/de-financial-dwh-pipeline](https://asket-on.github.io/de-financial-dwh-pipeline/)
 
+Interview walkthrough: [docs/project_walkthrough.md](docs/project_walkthrough.md)
+
 ## Architecture
 
 ```mermaid
