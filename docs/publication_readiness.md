@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T22:26:09+02:00
+updated: 2026-06-05T20:01:14+02:00
 ---
 # Publication Readiness
 
@@ -18,6 +18,7 @@ updated: 2026-06-04T22:26:09+02:00
 - Docker Compose execution gate in GitHub Actions.
 - Full DAG discovery gate in the official `apache/airflow:2.10.5` container.
 - Persistent local Airflow scheduler/webserver stack and bounded catchup verifier.
+- PostgreSQL-compatible warehouse SQL execution gate.
 - Reproducible static dashboard artifact generated from the checked local mart.
 - Repeatable secrets audit.
 - Generated `.local/`, `__pycache__/`, and SQLite files ignored.
@@ -30,13 +31,14 @@ python -m unittest discover -s tests -v
 python -m src.local_warehouse
 python -m dags.financial_dwh_pipeline
 python scripts/run_airflow_catchup.py
+docker compose -f docker-compose.postgres.yml up --abort-on-container-exit --exit-code-from warehouse-verifier
 python -m compileall -q src dags tests scripts
 ```
 
 Observed result:
 
 - secrets audit passed;
-- `12` tests passed;
+- `15` tests passed;
 - `3` transaction rows loaded;
 - `4` raw currency rows loaded and reduced to `3` current rows;
 - `3` mart rows built;
@@ -49,6 +51,7 @@ Observed result:
 - inverted refresh ranges were rejected.
 - persistent Airflow scheduler and webserver became healthy;
 - bounded catchup produced `2` successful scheduled DAG runs and `4` successful task instances.
+- PostgreSQL-compatible warehouse verifier created `staging` and `dwh` schemas, built `3` mart rows, and printed `postgres_warehouse=verified`.
 
 ## External Checks
 

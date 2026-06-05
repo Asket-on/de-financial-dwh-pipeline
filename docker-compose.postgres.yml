@@ -1,0 +1,27 @@
+services:
+  postgres-warehouse:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_PASSWORD: warehouse
+      POSTGRES_USER: warehouse
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U warehouse -d warehouse"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  warehouse-verifier:
+    image: postgres:16-alpine
+    working_dir: /project
+    environment:
+      PGDATABASE: warehouse
+      PGHOST: postgres-warehouse
+      PGPASSWORD: warehouse
+      PGUSER: warehouse
+    volumes:
+      - .:/project:ro
+    depends_on:
+      postgres-warehouse:
+        condition: service_healthy
+    command: ["sh", "scripts/verify_postgres_warehouse.sh"]

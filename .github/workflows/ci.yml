@@ -54,5 +54,12 @@ jobs:
       - name: Verify bounded Airflow catchup
         run: python scripts/run_airflow_catchup.py --cleanup
 
+      - name: Verify PostgreSQL-compatible warehouse SQL
+        run: docker compose -f docker-compose.postgres.yml up --abort-on-container-exit --exit-code-from warehouse-verifier
+
+      - name: Clean up PostgreSQL warehouse
+        if: always()
+        run: docker compose -f docker-compose.postgres.yml down --volumes
+
       - name: Compile Python sources
         run: python -m compileall -q src dags tests scripts

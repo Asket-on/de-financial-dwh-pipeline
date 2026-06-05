@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04T22:26:09+02:00
+updated: 2026-06-05T20:01:14+02:00
 ---
 # Financial DWH Pipeline
 
@@ -20,6 +20,7 @@ Build an analytical pipeline that loads transaction and currency-rate data into 
 - date-parameterized idempotent refresh and bounded historical backfill;
 - Airflow-compatible orchestration entrypoints;
 - a persistent local Airflow scheduler/webserver stack with verified bounded catchup;
+- PostgreSQL-compatible execution of the warehouse-oriented SQL;
 - a reproducible static dashboard generated from the checked mart;
 - a publication boundary between private course work and synthetic demo data.
 
@@ -124,6 +125,15 @@ Stop the stack and remove its metadata and log volumes:
 docker compose -f docker-compose.airflow.yml down --volumes
 ```
 
+Verify the publication-oriented warehouse SQL against PostgreSQL:
+
+```bash
+docker compose -f docker-compose.postgres.yml up --abort-on-container-exit --exit-code-from warehouse-verifier
+docker compose -f docker-compose.postgres.yml down --volumes
+```
+
+The verifier creates `staging` and `dwh` schemas, loads the synthetic CSV sources, runs the mart SQL, and fails if any PostgreSQL quality assertion is non-zero. See `docs/postgres_warehouse_evidence.md`.
+
 ## Warehouse Mapping
 
 The publication-oriented SQL keeps warehouse schemas such as `staging.transactions` and `dwh.global_metrics`. The local SQLite adapter uses equivalent prefixed tables:
@@ -134,6 +144,8 @@ The publication-oriented SQL keeps warehouse schemas such as `staging.transactio
 | `staging.currencies` | `staging_currencies` |
 | `staging.currency_rates_current` | `staging_currency_rates_current` |
 | `dwh.global_metrics` | `dwh_global_metrics` |
+
+`docker-compose.postgres.yml` verifies that the warehouse-oriented SQL runs against PostgreSQL schemas directly, without the SQLite table-name adapter.
 
 ## Airflow
 
@@ -178,6 +190,7 @@ The local run also prints a compact profile covering transaction volume, distinc
 ## Known Limitations
 
 - SQLite is the local demo adapter, not a production substitute for Vertica.
+- PostgreSQL verifies compatible schema and SQL behavior, not live Vertica execution.
 - The persistent Airflow stack is intended for local portfolio verification, not production deployment.
 - Docker Compose still requires a local Docker installation.
 - The dashboard is a static publication artifact, not a live BI service.
