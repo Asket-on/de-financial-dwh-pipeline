@@ -14,4 +14,5 @@ class PagesWorkflowContractTest(unittest.TestCase):
         self.assertIn("cp docs/dashboard.html _site/index.html", workflow)
         self.assertIn("actions/upload-pages-artifact", workflow)
         self.assertIn("actions/deploy-pages", workflow)
+        self.assertIn("enablement: true", workflow)
         self.assertIn("pages: write", workflow)
